@@ -5,22 +5,32 @@ import (
 	"StatisticsCollectionService/internal/repository"
 )
 
+// Структура сервиса, предоставляющая бизнес-логику
 type Service struct {
-	repo repository.Repository
+	Repo repository.Repository
 }
 
+// Конструктор для создания нового сервиса
+func NewService(repo repository.Repository) *Service {
+	return &Service{Repo: repo}
+}
+
+// Метод для получения книги ордеров
 func (s *Service) GetOrderBook(exchangeName, pair string) ([]*models.DepthOrder, error) {
-	return s.repo.GetOrderBook(exchangeName, pair)
+	return s.Repo.GetOrderBook(exchangeName, pair)
 }
 
-func (s *Service) SaveOrderBook(exchangeName, pair string, orderBook []*models.DepthOrder) ([]*models.DepthOrder, error) {
-	return s.repo.SaveOrderBook(exchangeName, pair, orderBook)
+// Метод для сохранения книги ордеров
+func (s *Service) SaveOrderBook(exchangeName, pair string, orderBook []*models.DepthOrder) error {
+	return s.Repo.SaveOrderBook(exchangeName, pair, orderBook)
 }
 
+// Метод для получения истории ордеров
 func (s *Service) GetOrderHistory(client *models.Client) ([]*models.HistoryOrder, error) {
-	return s.repo.GetOrderHistory(client)
+	return s.Repo.GetOrderHistory(client)
 }
 
+// Метод для сохранения ордера
 func (s *Service) SaveOrder(client *models.Client, order *models.HistoryOrder) error {
-	return s.repo.SaveOrder(client, order)
+	return s.Repo.SaveOrder(client, order)
 }

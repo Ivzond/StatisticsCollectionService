@@ -1,0 +1,174 @@
+basePath: /
+definitions:
+  models.Client:
+    properties:
+      client_name:
+        type: string
+      exchange_name:
+        type: string
+      label:
+        type: string
+      pair:
+        type: string
+    type: object
+  models.DepthOrder:
+    properties:
+      base_qty:
+        type: number
+      price:
+        type: number
+    type: object
+  models.HistoryOrder:
+    properties:
+      algorithm_name_placed:
+        type: string
+      base_qty:
+        type: number
+      client_name:
+        type: string
+      commission_quote_qty:
+        type: number
+      exchange_name:
+        type: string
+      highest_buy_price:
+        type: number
+      label:
+        type: string
+      lowest_sell_price:
+        type: number
+      pair:
+        type: string
+      price:
+        type: number
+      side:
+        type: string
+      time_placed:
+        type: string
+      type:
+        type: string
+    type: object
+  models.OrderBook:
+    properties:
+      asks:
+        items:
+          $ref: '#/definitions/models.DepthOrder'
+        type: array
+      bids:
+        items:
+          $ref: '#/definitions/models.DepthOrder'
+        type: array
+      exchange:
+        type: string
+      id:
+        type: integer
+      pair:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Это микросервис на golang для сбора статистики
+  title: API Сервиса Сбора Статистики
+  version: "1.0"
+paths:
+  /order/save:
+    post:
+      description: Сохранить новый ордер для указанного клиента
+      parameters:
+      - description: Ордер
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.HistoryOrder'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Сохранить ордер
+  /orderbook/get:
+    get:
+      description: Получить книгу ордеров для указанной биржи и пары валют
+      parameters:
+      - description: Имя биржи
+        in: query
+        name: exchange_name
+        required: true
+        type: string
+      - description: Валютная пара
+        in: query
+        name: pair
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DepthOrder'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получить книгу ордеров
+  /orderbook/save:
+    post:
+      description: Сохранить книгу ордеров для указанной биржи и пары валют
+      parameters:
+      - description: Книга ордеров
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderBook'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Сохранить книгу ордеров
+  /orderhistory/get:
+    get:
+      description: Получить историю ордеров для указанного клиента
+      parameters:
+      - description: Клиент
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/models.Client'
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.HistoryOrder'
+            type: array
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получить историю ордеров
+swagger: "2.0"

@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
+// Переменная для подключения к базе данных
 var DB *sql.DB
 
+// Функция инициализации базы данных
 func InitDB() {
 	connStr := "postgres://postgres:12345678@localhost/stats-collection?sslmode=disable"
 	var err error
