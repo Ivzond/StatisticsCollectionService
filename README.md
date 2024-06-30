@@ -1,93 +1,72 @@
-**1. Общие сведения**
+# Statistics Collection Service
 
-   * Название проекта: Сервис сбора статистики
-   * Описание проекта: Микросервис на golang для сбора статистики
-   * Цель проекта: Создать сервис с возможностью хранения статистики в базе данных
+## Описание
 
-**2. Требования к функциональности**
+Statistics Collection Service представляет собой микросервис на языке Go для сбора и хранения статистических данных.
 
-   Должно быть 4 api ручки:
-   * GetOrderBook(exchange_name, pair string) ([]*DepthOrder, error)
-   * SaveOrderBook(exchange_name, pair string, orderBook []*DepthOrder) error
-   * GetOrderHistory(client *Client)  ([]*HistoryOrder, error)
-   * SaveOrder(client *Client, order *HistoryOrder) error
+## Использование
 
-**3. Технические требования**
-   * Язык программирования: Go 1.22
-   * Библиотеки и фреймворки: Любые на ваш выбор
-   * Архитектура: REST API
-   * База данных:  Лучше реализовать ClickHouse, но можно и  Postgres
-   
-**4. Нефункциональные требования**
-   * Производительность: Время отклика сервера не более 200мс
-   * Rps: до 200 на запись, до 100 на чтение
+### Установка и настройка
 
-**5. Тестирование**
-   * Тестирование: Unit-тесты для всех основных функций
+1. Установите Go версии 1.12 или выше.
 
-**6. Требования к документации**
-   * Документация кода: Комментарии к основным модулям и функциям
-   * Пользовательская документация: Руководство пользователя
+2. Склонируйте данный репозиторий
 
-**7. Сроки выполнения**
-   * Ожидаемые сроки: 1 неделя
+3. Установите зависимости проекта
 
-**8. Детали реализации:**
-
-*Таблица OrderBook*
 ```
-id                  int64
-exchange            string
-pair                string
-asks                []depthOrder
-bids                []depthOrder
+go mod download
+```
+4. Настройте подключение к базе данных PostgreSQL в файле `internal/db/db.go`
 
-type DepthOrder struct{
-Price       float64
-BaseQty     float64
-}
+### Сборка и запуск
+Используйте утилиту make для управления процессом сборки и запуска:
+```
+make build  # Сборка проекта
+make run    # Запуск сервиса
+```
+Сервис будет доступен по адресу http://localhost:8080.
+
+Для очистки временных файлов и бинарного файла выполните:
+```
+make clean
 ```
 
-*Таблица Order_History*
+## API Endpoints
+* GET `/orderbook/get`
+    
+    Получить информацию о книге заявок для заданной биржи и валютной пары.
+
+* POST `/orderbook/save`
+
+    Сохранить информацию о книге заявок для заданной биржи и валютной пары.
+
+* GET `/orderhistory/get`
+
+    Получить историю заказов для указанного клиента.
+
+* POST `/order/save`
+
+    Сохранить информацию о заказе для указанного клиента.
+
+## Тестирование
+Для запуска unit-тестов выполните:
 ```
-client_name                 string
-exchange_name   	    string
-label		            string
-pair  		            string
-side    		    string
-type                        string
-base_qty                    float64
-price                       float64
-algorithm_name_placed       string
-lowest_sell_prc             float64
-highest_buy_prc             float64
-commission_quote_qty        float64
-time_placed                 time.time
-
-type HistoryOrder struct{
-client_name                 string
-exchange_name   	    string
-label		            string
-pair  		            string
-side    		    string
-type                        string
-base_qty                    float64
-price                       float64
-algorithm_name_placed       string
-lowest_sell_prc             float64
-highest_buy_prc             float64
-commission_quote_qty        float64
-time_placed                 time.time
-}
-
-type Client struct{
-client_name                     string
-exchange_name   	        string
-label		                string
-pair  		                string
-}
+make test
 ```
-**9. Отправка на проверку**
 
-После написания сервиса, нужно загрузить его в гитхаб в публичный репо и скинуть ссылку на почту:  andrew@vortex.foundation
+## Нагрузочное тестирование
+Нагрузочное тестирование проводилось с помощью Apache JMeter. Во время тестирования сервис показал следующие результаты:
+* **Производительность**: Время отклика не более 200 мс
+* **RPS(запись)**: До 200 запросов в секунду
+* **RPS(чтение)**: До 100 запросов в секунду
 
+### Параметры тестирования
+* Тестирование проводилось с использование 100 пользователей(Threads) на чтение и 200 на запись с *ramp-up period* в 10 секунд
+* Запросы на чтение (GetOrderBook и GetOrderHistory) показали максимальное время отклика в 28 мс и выполнялись в среднем с 99.5 RPS
+* Запросы на запись (SaveOrderBook и SaveOrder) показали максимальное время отклика в 22 мс и выполнялись в среднем с 200.8 RPS
+
+### Для запуска нагрузочного тестирования с помощью Apache JMeter выполните следующие шаги:
+1. Откройте JMeter и загрузите файл тест-плана `loadTesting/StatService.jmx`
+2. Настройте параметры тестирования по необходимости
+3. Запустите тест и анализируйте результаты
