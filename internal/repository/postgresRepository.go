@@ -50,7 +50,7 @@ func (r *PostgresRepository) SaveOrderBook(exchangeName, pair string, orderBook 
 	if err != nil {
 		return err
 	}
-	query := `INSERT INTO order_books (exchange, pair, asks, bids) VALUES ($1, $2, $3, $4)`
+	query := `INSERT INTO order_books (exchange, pair, asks, bids) VALUES ($1, $2, $3, $4) ON CONFLICT (exchange, pair) DO UPDATE SET asks = EXCLUDED.asks, bids = EXCLUDED.bids`
 	_, err = r.db.Exec(query, exchangeName, pair, asksJSON, bidsJSON)
 	return err
 }

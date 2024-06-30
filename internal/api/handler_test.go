@@ -44,6 +44,7 @@ func TestGetOrderBookHandler(t *testing.T) {
 	pair := "BTC/USDT"
 	expectedOrderBook := []*models.DepthOrder{
 		{Price: 50000, BaseQty: 0.1},
+		{Price: 50500, BaseQty: 0.2},
 	}
 
 	mockService.On("GetOrderBook", exchangeName, pair).Return(expectedOrderBook, nil)
@@ -111,7 +112,7 @@ func TestGetOrderHistoryHandler(t *testing.T) {
 	requestBody, err := json.Marshal(client)
 	assert.NoError(t, err)
 
-	req, err := http.NewRequest("POST", "/orderhistory/get", bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("GET", "/orderhistory/get", bytes.NewBuffer(requestBody))
 	req.Header.Set("Content-Type", "application/json")
 	assert.NoError(t, err)
 

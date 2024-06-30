@@ -12,8 +12,8 @@ type HistoryOrder struct {
 	BaseQty             float64   `json:"base_qty"`
 	Price               float64   `json:"price"`
 	AlgorithmNamePlaced string    `json:"algorithm_name_placed"`
-	LowestSellPrice     float64   `json:"lowest_sell_price"`
-	HighestBuyPrice     float64   `json:"highest_buy_price"`
+	LowestSellPrice     float64   `json:"lowest_sell_prc"`
+	HighestBuyPrice     float64   `json:"highest_buy_prc"`
 	CommissionQuoteQty  float64   `json:"commission_quote_qty"`
 	TimePlaced          time.Time `json:"time_placed"`
 }
